@@ -1,0 +1,100 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: #0a0a0a;
+  color: #ffffff;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #E31837 0%, #2B4C7E 100%);
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #E31837;
+}
+
+/* Web pattern overlay */
+.web-pattern {
+  background-image: 
+    repeating-linear-gradient(0deg, transparent, transparent 50px, rgba(227, 24, 55, 0.03) 50px, rgba(227, 24, 55, 0.03) 51px),
+    repeating-linear-gradient(90deg, transparent, transparent 50px, rgba(43, 76, 126, 0.03) 50px, rgba(43, 76, 126, 0.03) 51px);
+}
+
+/* Glitch effect */
+@keyframes glitch {
+  0% {
+    text-shadow: 2px 2px #E31837, -2px -2px #2B4C7E;
+  }
+  25% {
+    text-shadow: -2px -2px #E31837, 2px 2px #2B4C7E;
+  }
+  50% {
+    text-shadow: 2px -2px #E31837, -2px 2px #2B4C7E;
+  }
+  75% {
+    text-shadow: -2px 2px #E31837, 2px -2px #2B4C7E;
+  }
+  100% {
+    text-shadow: 2px 2px #E31837, -2px -2px #2B4C7E;
+  }
+}
+
+.glitch-text {
+  animation: glitch 3s infinite;
+}
+
+/* Spider web animation */
+@keyframes web-pulse {
+  0%, 100% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.05);
+  }
+}
+
+.web-animate {
+  animation: web-pulse 4s ease-in-out infinite;
+}
+
+
+
+@layer components {
+  .card {
+    @apply bg-slate-900 border border-spiderBlue/30 rounded-xl p-6 shadow-lg shadow-spiderBlue/10 transition-all hover:border-spiderBlue/60;
+  }
+  .input-field {
+    @apply w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white focus:outline-none focus:border-spiderRed focus:ring-1 focus:ring-spiderRed transition-colors;
+  }
+  .textarea-field {
+    @apply w-full bg-slate-800 border border-slate-700 rounded-lg px-4 py-2 text-white min-h-[100px] focus:outline-none focus:border-spiderRed focus:ring-1 focus:ring-spiderRed transition-colors;
+  }
+  .btn-primary {
+    @apply bg-spiderRed hover:bg-red-700 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-[0_0_10px_rgba(227,24,55,0.4)] disabled:opacity-50;
+  }
+  .btn-secondary {
+    @apply bg-spiderBlue hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-colors shadow-[0_0_10px_rgba(43,76,126,0.4)] disabled:opacity-50;
+  }
+}
