@@ -33,7 +33,7 @@ app.add_middleware(
 )
 
 # --- Database Configuration ---
-DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://samay:fy2jcg52z4@localhost/portfolio_db')
+DATABASE_URL = os.getenv('DATABASE_URL', 'postgresql://samay:eWMb6FHcGSrOWTocYtisb4u0wcxqNXGq@dpg-d7baochr0fns73f00mkg-a/portfolio_db_0sqt')
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
