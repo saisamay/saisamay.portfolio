@@ -1,4 +1,4 @@
-from fastapi import FastAPI, HTTPException, Depends, Header
+from fastapi import FastAPI, HTTPException, Depends, Header, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, EmailStr
 from sqlalchemy import create_engine, Column, String, JSON, DateTime, Boolean
@@ -25,7 +25,7 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",   
         "https://saisamay.me",    
-        "https://www.saisamay.me" 
+        "https://www.saisamay.me"
     ],
     allow_credentials=True,
     allow_methods=["*"],
@@ -114,7 +114,7 @@ def verify_admin(user: User = Depends(verify_session)):
 # ==================== AUTH ENDPOINTS ====================
 
 @app.post("/api/auth/send-otp")
-async def send_otp(request: EmailRequest, db: Session = Depends(get_db)):
+async def send_otp(request: EmailRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
     email = request.email
     otp = ''.join(random.choices(string.digits, k=6))
     expiry = datetime.now() + timedelta(minutes=10)
@@ -142,15 +142,16 @@ async def send_otp(request: EmailRequest, db: Session = Depends(get_db)):
     </html>
     """
     
-    email_sent = send_email(email, subject, body)
+    # Send the OTP email in the background
+    background_tasks.add_task(send_email, email, subject, body)
     
-    if email != ADMIN_EMAIL and email_sent:
+    if email != ADMIN_EMAIL:
         admin_subject = "🕷️ New Visitor Alert"
         admin_body = f"Visitor email: {email} at {datetime.now()}"
-        send_email(ADMIN_EMAIL, admin_subject, admin_body)
+        # Send the admin alert in the background
+        background_tasks.add_task(send_email, ADMIN_EMAIL, admin_subject, admin_body)
     
     return {"message": "OTP sent successfully"}
-
 @app.post("/api/auth/verify-otp")
 async def verify_otp(request: OTPVerification, db: Session = Depends(get_db)):
     user = db.query(User).filter(User.email == request.email).first()
