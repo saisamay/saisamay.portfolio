@@ -1,12 +1,14 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+// This automatically strips any accidental trailing slashes from your environment variable!
+const rawUrl = process.env.REACT_APP_BACKEND_URL || 'http://localhost:8001';
+const BACKEND_URL = rawUrl.replace(/\/$/, '');
 
 export default function AuthModal({ onAuthSuccess }) {
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
-  const [step, setStep] = useState('email'); // 'email' or 'otp'
+  const [step, setStep] = useState('email');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
@@ -19,7 +21,13 @@ export default function AuthModal({ onAuthSuccess }) {
       await axios.post(`${BACKEND_URL}/api/auth/send-otp`, { email });
       setStep('otp');
     } catch (err) {
-      setError(err.response?.data?.detail || 'Failed to send OTP');
+      const errorData = err.response?.data?.detail;
+      // Prevent React crashes if FastAPI sends a validation array
+      if (Array.isArray(errorData)) {
+        setError("Please enter a valid email address.");
+      } else {
+        setError(errorData || 'Failed to connect to the backend.');
+      }
     } finally {
       setLoading(false);
     }
@@ -37,7 +45,8 @@ export default function AuthModal({ onAuthSuccess }) {
       });
       onAuthSuccess(response.data.session_token, response.data.is_admin, response.data.email);
     } catch (err) {
-      setError(err.response?.data?.detail || 'Invalid OTP');
+      const errorData = err.response?.data?.detail;
+      setError(errorData || 'Invalid OTP');
     } finally {
       setLoading(false);
     }
@@ -48,7 +57,7 @@ export default function AuthModal({ onAuthSuccess }) {
       <div className="card max-w-md w-full" data-testid="auth-modal">
         <div className="text-center mb-6">
           <h1 className="text-5xl font-bold mb-2">
-            <span className="text-spidey-red">🕷️</span>
+            <span className="text-spiderRed">🕷️</span>
           </h1>
           <h2 className="text-3xl font-bold glitch-text mb-2">SAMAY'S PORTFOLIO</h2>
           <p className="text-gray-400">Enter your email to access</p>
@@ -69,7 +78,7 @@ export default function AuthModal({ onAuthSuccess }) {
             </div>
             
             {error && (
-              <p className="text-spidey-red text-sm" data-testid="auth-error">{error}</p>
+              <p className="text-spiderRed text-sm" data-testid="auth-error">{error}</p>
             )}
             
             <button
@@ -98,7 +107,7 @@ export default function AuthModal({ onAuthSuccess }) {
             </div>
             
             {error && (
-              <p className="text-spidey-red text-sm" data-testid="auth-error">{error}</p>
+              <p className="text-spiderRed text-sm" data-testid="auth-error">{error}</p>
             )}
             
             <button
@@ -113,7 +122,7 @@ export default function AuthModal({ onAuthSuccess }) {
             <button
               type="button"
               onClick={() => { setStep('email'); setOtp(''); setError(''); }}
-              className="btn-secondary w-full"
+              className="btn-secondary w-full mt-2"
               data-testid="back-button"
             >
               Back
