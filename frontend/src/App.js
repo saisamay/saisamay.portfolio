@@ -27,7 +27,7 @@ function App() {
   }, []);
 
   const checkSession = async () => {
-    const token = localStorage.getItem('session_token');
+    const token = localStorage.getItem('token');
     if (token) {
       try {
         const response = await axios.get(`${BACKEND_URL}/api/auth/check-session`, {
@@ -37,13 +37,13 @@ function App() {
         setIsAdmin(response.data.is_admin);
         setUserEmail(response.data.email);
       } catch (error) {
-        localStorage.removeItem('session_token');
+        localStorage.removeItem('token');
       }
     }
   };
 
   const handleAuthSuccess = (token, admin, email) => {
-    localStorage.setItem('session_token', token);
+    localStorage.setItem('token', token);
     setIsAuthenticated(true);
     setIsAdmin(admin);
     setUserEmail(email);

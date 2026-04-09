@@ -13,7 +13,7 @@ export default function AboutSection() {
 
   const fetchContent = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = localStorage.getItem('token');
       const response = await axios.get(`${BACKEND_URL}/api/content/about`, {
         headers: { Authorization: `Bearer ${token}` }
       });

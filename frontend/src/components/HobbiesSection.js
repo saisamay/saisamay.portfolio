@@ -13,7 +13,7 @@ export default function HobbiesSection() {
 
   const fetchHobbies = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = localStorage.getItem('token');
       const response = await axios.get(`${BACKEND_URL}/api/content/hobbies`, {
         headers: { Authorization: `Bearer ${token}` }
       });

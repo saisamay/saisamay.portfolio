@@ -43,6 +43,7 @@ export default function AuthModal({ onAuthSuccess }) {
         email,
         otp
       });
+      localStorage.setItem("token", response.data.access_token);
       onAuthSuccess(response.data.session_token, response.data.is_admin, response.data.email);
     } catch (err) {
       const errorData = err.response?.data?.detail;

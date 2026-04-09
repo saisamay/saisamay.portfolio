@@ -13,7 +13,7 @@ export default function EducationSection() {
 
   const fetchEducation = async () => {
     try {
-      const token = localStorage.getItem('session_token');
+      const token = localStorage.getItem('token');
       const response = await axios.get(`${BACKEND_URL}/api/content/education`, {
         headers: { Authorization: `Bearer ${token}` }
       });

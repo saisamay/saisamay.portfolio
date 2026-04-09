@@ -44,7 +44,7 @@ export default function AdminPanel({ onClose }) {
   }, []);
 
   const getAuthHeaders = () => ({
-    headers: { Authorization: `Bearer ${localStorage.getItem('session_token')}` }
+    headers: { Authorization: `Bearer ${localStorage.getItem('token')}` }
   });
 
   const fetchAllContent = async () => {
