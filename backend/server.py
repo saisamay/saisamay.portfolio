@@ -69,9 +69,6 @@ def get_db():
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 SECRET_KEY = os.getenv("SECRET_KEY")
-# Get allowed members, convert to list of lowercase emails (if any are provided)
-ALLOWED_MEMBERS_ENV = os.getenv('ALLOWED_MEMBERS', '')
-ALLOWED_MEMBERS = [m.strip().lower() for m in ALLOWED_MEMBERS_ENV.split(',')] if ALLOWED_MEMBERS_ENV else []
 
 if not ADMIN_EMAIL or not ADMIN_PASSWORD or not SECRET_KEY:
     raise Exception("Missing required environment variables")
@@ -131,22 +128,19 @@ async def check_email(email: str):
 @app.post("/api/auth/login")
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
     try:
-        # check_deliverability=True verifies if the email domain actually exists
-        valid = validate_email(request.email, check_deliverability=True)
+        # Reverted back to check_deliverability=False so you can use any formatted email (even fake ones)
+        valid = validate_email(request.email, check_deliverability=False)
         email = valid.normalized
     except EmailNotValidError as e:
-        raise HTTPException(status_code=400, detail="Invalid email format or domain does not exist.")
+        raise HTTPException(status_code=400, detail="Invalid email format.")
 
     is_admin = (email == ADMIN_EMAIL)
 
     if is_admin:
         if request.password != ADMIN_PASSWORD:
             raise HTTPException(status_code=401, detail="Admin password incorrect")
-    else:
-        # STRICT ALLOWLIST CHECK
-        # If ALLOWED_MEMBERS is populated in .env, block anyone not on the list
-        if ALLOWED_MEMBERS and email not in ALLOWED_MEMBERS:
-            raise HTTPException(status_code=403, detail="Access denied. Email is not registered as a valid member.")
+
+    # If it's not admin, anyone gets in. No ALLOWED_MEMBERS check here anymore!
 
     user = db.query(User).filter(User.email == email).first()
     if not user:
