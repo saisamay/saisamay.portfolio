@@ -7,13 +7,12 @@ from dotenv import load_dotenv
 from email_validator import validate_email, EmailNotValidError
 from jose import JWTError, jwt
 import os
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import Optional
 import uuid
 
 # Load env
 load_dotenv()
-
 app = FastAPI()
 
 # CORS
@@ -87,7 +86,8 @@ class LoginRequest(BaseModel):
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    expire = datetime.utcnow() + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # Use timezone-aware UTC datetime to prevent deprecation warnings in newer Python versions
+    expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
@@ -117,6 +117,21 @@ def verify_admin(user: dict = Depends(verify_session)):
 
 # ================= AUTH =================
 
+@app.get("/api/auth/check-email")
+async def check_email(email: str):
+    """Lightning-fast check to see if an email is the admin email without logging in."""
+    try:
+        # Validate and normalize the email format
+        valid = validate_email(email, check_deliverability=False)
+        normalized_email = valid.normalized
+        
+        # Check against environment variable
+        is_admin = (normalized_email == ADMIN_EMAIL)
+        return {"is_admin": is_admin}
+    except EmailNotValidError:
+        # If it's not a fully valid email yet (e.g. still typing), it's definitely not admin
+        return {"is_admin": False}
+
 @app.post("/api/auth/login")
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
     try:
@@ -137,7 +152,8 @@ async def login(request: LoginRequest, db: Session = Depends(get_db)):
         user = User(email=email, is_admin=is_admin)
         db.add(user)
 
-    user.last_login = datetime.utcnow()
+    # Use naive datetime for SQLAlchemy DateTime column compatibility unless using DateTime(timezone=True)
+    user.last_login = datetime.now(timezone.utc).replace(tzinfo=None) 
     db.commit()
 
     token = create_access_token({
