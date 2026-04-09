@@ -1,0 +1,19 @@
+name: Keep Render Backend Alive Bot
+
+on:
+  schedule:
+    # This cron syntax tells the bot to run every 14 minutes
+    - cron: "*/14 * * * *" 
+  # This allows you to manually trigger the bot if you ever want to
+  workflow_dispatch: 
+
+jobs:
+  ping-server:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping API Health Endpoint
+        # This uses the built-in curl command to visit your health check URL
+        run: |
+          echo "🤖 Waking up the Render server..."
+          curl -s https://saisamay-portfolio.onrender.com/api/health
+          echo "✅ Ping complete!"
