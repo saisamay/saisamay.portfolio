@@ -3,7 +3,7 @@ name: Keep Render Backend Alive Bot
 on:
   schedule:
     # This cron syntax tells the bot to run every 14 minutes
-    - cron: "*/14 * * * *" 
+    - cron: "*/10 * * * *" 
   # This allows you to manually trigger the bot if you ever want to
   workflow_dispatch: 
 
