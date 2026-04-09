@@ -69,6 +69,9 @@ def get_db():
 ADMIN_EMAIL = os.getenv('ADMIN_EMAIL')
 ADMIN_PASSWORD = os.getenv('ADMIN_PASSWORD')
 SECRET_KEY = os.getenv("SECRET_KEY")
+# Get allowed members, convert to list of lowercase emails (if any are provided)
+ALLOWED_MEMBERS_ENV = os.getenv('ALLOWED_MEMBERS', '')
+ALLOWED_MEMBERS = [m.strip().lower() for m in ALLOWED_MEMBERS_ENV.split(',')] if ALLOWED_MEMBERS_ENV else []
 
 if not ADMIN_EMAIL or not ADMIN_PASSWORD or not SECRET_KEY:
     raise Exception("Missing required environment variables")
@@ -86,7 +89,6 @@ class LoginRequest(BaseModel):
 
 def create_access_token(data: dict):
     to_encode = data.copy()
-    # Use timezone-aware UTC datetime to prevent deprecation warnings in newer Python versions
     expire = datetime.now(timezone.utc) + timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
@@ -121,38 +123,36 @@ def verify_admin(user: dict = Depends(verify_session)):
 async def check_email(email: str):
     """Lightning-fast check to see if an email is the admin email without logging in."""
     try:
-        # Validate and normalize the email format
         valid = validate_email(email, check_deliverability=False)
-        normalized_email = valid.normalized
-        
-        # Check against environment variable
-        is_admin = (normalized_email == ADMIN_EMAIL)
-        return {"is_admin": is_admin}
+        return {"is_admin": valid.normalized == ADMIN_EMAIL}
     except EmailNotValidError:
-        # If it's not a fully valid email yet (e.g. still typing), it's definitely not admin
         return {"is_admin": False}
 
 @app.post("/api/auth/login")
 async def login(request: LoginRequest, db: Session = Depends(get_db)):
     try:
-        valid = validate_email(request.email, check_deliverability=False)
+        # check_deliverability=True verifies if the email domain actually exists
+        valid = validate_email(request.email, check_deliverability=True)
         email = valid.normalized
     except EmailNotValidError as e:
-        raise HTTPException(status_code=400, detail=str(e))
+        raise HTTPException(status_code=400, detail="Invalid email format or domain does not exist.")
 
     is_admin = (email == ADMIN_EMAIL)
 
     if is_admin:
         if request.password != ADMIN_PASSWORD:
             raise HTTPException(status_code=401, detail="Admin password incorrect")
+    else:
+        # STRICT ALLOWLIST CHECK
+        # If ALLOWED_MEMBERS is populated in .env, block anyone not on the list
+        if ALLOWED_MEMBERS and email not in ALLOWED_MEMBERS:
+            raise HTTPException(status_code=403, detail="Access denied. Email is not registered as a valid member.")
 
-    # Optional DB tracking
     user = db.query(User).filter(User.email == email).first()
     if not user:
         user = User(email=email, is_admin=is_admin)
         db.add(user)
 
-    # Use naive datetime for SQLAlchemy DateTime column compatibility unless using DateTime(timezone=True)
     user.last_login = datetime.now(timezone.utc).replace(tzinfo=None) 
     db.commit()
 
