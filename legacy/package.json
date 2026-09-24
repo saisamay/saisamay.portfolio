@@ -1,0 +1,20 @@
+{
+  "name": "saisamay.portfolio",
+  "version": "1.0.0",
+  "description": "",
+  "homepage": "https://github.com/saisamay/saisamay.portfolio#readme",
+  "bugs": {
+    "url": "https://github.com/saisamay/saisamay.portfolio/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/saisamay/saisamay.portfolio.git"
+  },
+  "license": "ISC",
+  "author": "samay",
+  "type": "commonjs",
+  "main": "about.js",
+  "scripts": {
+    "test": "npm run dev"
+  }
+}
