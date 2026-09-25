@@ -1,22 +1,23 @@
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Footer from './components/Footer';
-import Home from './pages/Home';
-import Projects from './pages/Projects';
-import About from './pages/About';
-import Contact from './pages/Contact';
+import { useState, useEffect } from 'react';
+import { BrowserRouter as Router } from 'react-router-dom';
+import DesktopApp from './apps/DesktopApp';
+import MobileApp from './apps/MobileApp';
 
 function App() {
+  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
+
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
   return (
     <Router>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/projects" element={<Projects />} />
-        <Route path="/about" element={<About />} />
-        <Route path="/contact" element={<Contact />} />
-      </Routes>
-      <Footer />
+      {isMobile ? <MobileApp /> : <DesktopApp />}
     </Router>
   );
 }
