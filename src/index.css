@@ -180,7 +180,7 @@ nav ul {
 }
 
 .logo-img {
-  height: clamp(38px, 9vw, 48px);
+  height: clamp(68px, 9vw, 48px);
   width: auto;
   display: block;
   transition: transform var(--duration-medium) var(--ease-logo-hover);
@@ -194,7 +194,7 @@ nav ul {
   border: var(--border-width-medium) solid var(--color-black);
   background-color: var(--color-white);
   border-radius: var(--radius-pill);
-  padding: 0.3em 1.2em;
+  padding: 0.4em 1.25em;
   position: relative;
   overflow: hidden;
   transition: background-color var(--duration-medium), border-color var(--duration-medium), transform var(--duration-medium);
@@ -205,6 +205,7 @@ nav ul {
 }
 
 .nav-link a {
+  font-size: calc(1rem + 1.5px);
   font-weight: 500;
   font-family: var(--font-secondary);
   color: var(--color-black);
@@ -538,12 +539,17 @@ nav ul {
 .job-role-container {
   position: fixed;
   z-index: var(--z-interactive);
-  top: calc(45vh - 3.5rem);
+  top: calc(43vh - 2rem);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
+  flex-direction: column;
   align-items: center;
-  gap: var(--gap-small);
+  justify-content: center;
+  gap: 0.35rem;
+  width: max-content;
+  max-width: 95vw;
+  text-align: center;
   white-space: nowrap;
 }
 
@@ -668,17 +674,17 @@ nav ul {
 /* #region ===== DRAG AND DROP NAVIGATION ===== */
 .categorySelect {
   position: fixed;
-  top: calc(51vh + 1rem);
-  scale: 1.3;
-  left: 20%;
-  right: 20%;
+  top: calc(58vh + 1rem);
+  left: 50%;
   transform: translateX(-50%);
   display: flex;
   flex-wrap: nowrap;
   justify-content: center;
+  align-items: center;
   gap: 0.5rem;
-  max-width: min(95vw, 850px);
-  font-size: min(1rem, 2vw);
+  width: max-content;
+  max-width: min(92vw, 850px);
+  font-size: clamp(0.8rem, 1vw, 1rem);
   font-weight: 500;
   font-family: var(--font-primary);
   border: var(--border-width-thick) dashed var(--color-black);
@@ -687,7 +693,6 @@ nav ul {
   z-index: var(--z-interactive);
   cursor: grab;
   pointer-events: auto;
-  will-change: opacity;
   opacity: 0;
   transition: opacity 0.7s var(--ease-smooth), transform var(--duration-medium);
 }
@@ -701,10 +706,9 @@ nav ul {
   opacity: 1;
   will-change: opacity;
   justify-content: center;
-  top: calc(51vh + 1rem);
-  left: 20%;
-  right: 20%;
-  scale: 1.3;
+  top: calc(58vh + 1rem);
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 .categorySelect span[draggable="true"] {
@@ -746,7 +750,8 @@ nav ul {
   min-height: 60px;
   display: none;
   align-items: center;
-  justify-content: flex-start;
+  justify-content: center;
+  text-align: center;
   transition: all var(--duration-medium) var(--ease-smooth), opacity 0.7s var(--ease-in-out);
 }
 
@@ -767,14 +772,14 @@ nav ul {
   font-style: italic;
   font-size: clamp(1rem, 1.1rem + 3vw, 4rem);
   font-weight: 300;
-  text-align: left;
+  text-align: center;
   opacity: 0.5;
 }
 
 #category-drop-zone span[draggable="true"] {
   font-family: var(--font-primary);
   font-size: clamp(1rem, 1.1rem + 3vw, 4rem);
-  text-align: left;
+  text-align: center;
   font-weight: 300;
   cursor: grab;
   color: var(--color-black);
@@ -1760,15 +1765,45 @@ form textarea {
 
 @media (max-width: 460px) {
   .job-role-container {
-    flex-direction: column;
-    align-items: center;
-    gap: var(--gap-small);
+    top: 39vh;
+    width: 100%;
+    max-width: 100vw;
+    padding: 0 1rem;
+  }
+
+  .typewriter-animation {
+    font-size: clamp(1.7rem, 8vw, 2.5rem);
+    letter-spacing: 0.07em;
   }
 
   #category-drop-zone {
-    margin-left: 0;
-    justify-content: center;
+    min-width: min(200px, 75vw);
     min-height: 50px;
+  }
+
+  .placeholder-text,
+  #category-drop-zone span[draggable="true"] {
+    font-size: clamp(1.7rem, 8vw, 2.5rem);
+  }
+
+  .categorySelect {
+    top: 55vh;
+    width: calc(100vw - 2rem);
+    max-width: calc(100vw - 2rem);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.6rem;
+    transform: translateX(-50%);
+  }
+
+  .categorySelect span[draggable="true"] {
+    flex: 0 0 auto;
+    padding: 0.4em 0.45em;
+    margin: 0;
+    font-size: clamp(0.65rem, 2.8vw, 0.85rem);
   }
 }
 

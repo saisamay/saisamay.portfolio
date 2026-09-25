@@ -37,11 +37,17 @@ const Footer = () => {
   }, []);
 
   const handleMouseEnter = () => {
-    setCursorStyle(prev => ({ ...prev, opacity: 1, transform: 'scale(1)' }));
+    if (cursorRef.current) {
+      cursorRef.current.style.opacity = '1';
+      cursorRef.current.style.transform = 'scale(1)';
+    }
   };
 
   const handleMouseLeave = () => {
-    setCursorStyle(prev => ({ ...prev, opacity: 0, transform: 'scale(0)' }));
+    if (cursorRef.current) {
+      cursorRef.current.style.opacity = '0';
+      cursorRef.current.style.transform = 'scale(0)';
+    }
   };
 
   const handleMouseMove = (e) => {
@@ -53,7 +59,8 @@ const Footer = () => {
     const x = e.clientX - rect.left - (cursorWidth / 2);
     const y = e.clientY - rect.top - (cursorHeight / 2);
 
-    setCursorStyle(prev => ({ ...prev, left: x, top: y }));
+    cursorRef.current.style.left = `${x}px`;
+    cursorRef.current.style.top = `${y}px`;
   };
 
   return (
@@ -84,10 +91,8 @@ const Footer = () => {
         className="cursor-effects" 
         ref={cursorRef}
         style={{
-          opacity: cursorStyle.opacity, 
-          transform: cursorStyle.transform, 
-          left: cursorStyle.left, 
-          top: cursorStyle.top 
+          opacity: 0, 
+          transform: 'scale(0)', 
         }}
       ></div>
     </footer>
