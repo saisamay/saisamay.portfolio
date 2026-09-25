@@ -154,11 +154,11 @@ a {
 /* #region ===== NAVIGATION ===== */
 nav {
   background: transparent;
-  padding: clamp(0.5rem, 2vh, 1rem) 0;
+  padding: clamp(0.6rem, 2vh, 1rem) 0;
   position: sticky;
   top: 0;
   z-index: var(--z-nav);
-  height: clamp(60px, 10vh, 80px);
+  height: clamp(66px, 10vh, 86px);
   display: flex;
   align-items: center;
 }
@@ -180,7 +180,7 @@ nav ul {
 }
 
 .logo-img {
-  height: clamp(68px, 9vw, 48px);
+  height: clamp(48px, 6vw, 68px);
   width: auto;
   display: block;
   transition: transform var(--duration-medium) var(--ease-logo-hover);
@@ -194,18 +194,22 @@ nav ul {
   border: var(--border-width-medium) solid var(--color-black);
   background-color: var(--color-white);
   border-radius: var(--radius-pill);
-  padding: 0.4em 1.25em;
+  padding: 0.48em 1.4em;
   position: relative;
   overflow: hidden;
-  transition: background-color var(--duration-medium), border-color var(--duration-medium), transform var(--duration-medium);
+  transition:
+    background-color var(--duration-medium),
+    border-color var(--duration-medium),
+    transform var(--duration-medium);
 }
+
 
 .nav-link:hover {
   transform: scale(var(--transform-scale-hover-small));
 }
 
 .nav-link a {
-  font-size: calc(1rem + 1.5px);
+  font-size: calc(1rem + 2px);
   font-weight: 500;
   font-family: var(--font-secondary);
   color: var(--color-black);
@@ -539,7 +543,7 @@ nav ul {
 .job-role-container {
   position: fixed;
   z-index: var(--z-interactive);
-  top: calc(43vh - 2rem);
+  top: calc(40vh - 2rem);
   left: 50%;
   transform: translateX(-50%);
   display: flex;
@@ -587,7 +591,7 @@ nav ul {
 #scroll-title {
   position: absolute;
   width: 100%;
-  top: calc(45vh - 7rem);
+  top: calc(43vh + 4.5rem);
   left: 0;
   transform: none;
   color: var(--color-black);

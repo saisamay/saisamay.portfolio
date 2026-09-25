@@ -143,7 +143,7 @@ const Home = () => {
           id="scroll-title" 
           ref={titleRef}
           style={{
-            transform: animationsComplete ? 'translateY(0)' : 'translateY(200px)',
+            transform: 'translateY(-180px)',
             opacity: animationsComplete ? 1 : 0,
             transition: 'transform 0.7s cubic-bezier(.2,1.2,.6,1), opacity 0.5s'
           }}
