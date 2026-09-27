@@ -39,6 +39,8 @@ const Home = () => {
 
   useEffect(() => {
     let mounted = true;
+    let samayTimer;
+    let gifTimer;
 
     const typeText = async () => {
       let currentText = '';
@@ -69,22 +71,17 @@ const Home = () => {
        */
       setAnimationsComplete(true);
 
-      const samayTimer = setTimeout(() => {
+      samayTimer = setTimeout(() => {
         if (mounted) {
           setSamayVisible(true);
         }
       }, 50);
 
-      const gifTimer = setTimeout(() => {
+      gifTimer = setTimeout(() => {
         if (mounted) {
           setGifVisible(true);
         }
-      }, 900);
-
-      return () => {
-        clearTimeout(samayTimer);
-        clearTimeout(gifTimer);
-      };
+      }, 500);
     };
 
     const startTimer = setTimeout(() => {
@@ -94,6 +91,8 @@ const Home = () => {
     return () => {
       mounted = false;
       clearTimeout(startTimer);
+      clearTimeout(samayTimer);
+      clearTimeout(gifTimer);
     };
   }, []);
 
@@ -101,6 +100,10 @@ const Home = () => {
 
   useEffect(() => {
     const handleScroll = () => {
+      // Don't let scroll drive opacity until the intro has finished —
+      // otherwise an early scroll fights the intro reveal.
+      if (!animationsComplete) return;
+
       const scrollY = window.scrollY;
       const hasScrolled = scrollY > 300;
 
@@ -127,7 +130,7 @@ const Home = () => {
     return () => {
       window.removeEventListener('scroll', handleScroll);
     };
-  }, []);
+  }, [animationsComplete]);
 
   /* ==================== DRAG & DROP ==================== */
 
@@ -192,11 +195,15 @@ const Home = () => {
 
       <section className="landing">
 
-        {/* ==================== HERO INTRO ==================== */}
+        {/*
+          ==================== HERO INTRO CONTAINER ====================
+          Single fixed, centered flex column. "Hi! I'm" and "Samay" are
+          both normal-flow children here, so their order and spacing
+          are deterministic — they can never drift apart based on
+          scroll position or reload timing.
+        */}
 
         <div className="hero-intro-container">
-
-          {/* Greeting + Drop Zone */}
 
           <div
             className={`job-role-container ${
@@ -257,72 +264,77 @@ const Home = () => {
 
           </div>
 
-          {/* ==================== ROLE OPTIONS ==================== */}
+          {/* Samay — a normal flex child, right below "Hi! I'm" */}
 
-          {scrolled && (
-            <div
-              className="categorySelect"
-              role="group"
-              aria-label="Drag and drop job roles"
-              id="role-instructions"
-              onDragOver={handleDragOver}
-              onDrop={(event) => {
-                event.preventDefault();
-                setDropZoneItem(null);
-              }}
-            >
-              {categories.map((role) => {
-                if (role === dropZoneItem) {
-                  return null;
-                }
-
-                return (
-                  <span
-                    key={role}
-                    id={role}
-                    className="draggable-item"
-                    draggable="true"
-                    onDragStart={(event) =>
-                      handleDragStart(event, role)
-                    }
-                    onDragEnd={() => setDraggedItem(null)}
-                    style={{
-                      opacity:
-                        draggedItem === role ? 0.5 : 1,
-                    }}
-                  >
-                    <span
-                      className="bracket"
-                      aria-hidden="true"
-                    >
-                      [
-                    </span>
-
-                    {role}
-
-                    <span
-                      className="bracket"
-                      aria-hidden="true"
-                    >
-                      ]
-                    </span>
-                  </span>
-                );
-              })}
-            </div>
-          )}
+          <h1
+            id="scroll-title"
+            ref={titleRef}
+            className={samayVisible ? 'hero-title-visible' : ''}
+          >
+            Samay
+          </h1>
 
         </div>
 
-        {/* ==================== SAMAY ==================== */}
+        {/*
+          categorySelect stays a SIBLING of hero-intro-container, not
+          nested inside it — hero-intro-container has a CSS transform,
+          and nesting a position:fixed element inside a transformed
+          ancestor would break its viewport-relative positioning.
+        */}
 
-        <h1
-          id="scroll-title"
-          ref={titleRef}
-          className={samayVisible ? 'hero-title-visible' : ''}
-        >
-          Samay
-        </h1>
+        {scrolled && (
+          <div
+            className="categorySelect"
+            role="group"
+            aria-label="Drag and drop job roles"
+            id="role-instructions"
+            onDragOver={handleDragOver}
+            onDrop={(event) => {
+              event.preventDefault();
+              setDropZoneItem(null);
+            }}
+          >
+            {categories.map((role) => {
+              if (role === dropZoneItem) {
+                return null;
+              }
+
+              return (
+                <span
+                  key={role}
+                  id={role}
+                  className="draggable-item"
+                  draggable="true"
+                  onDragStart={(event) =>
+                    handleDragStart(event, role)
+                  }
+                  onDragEnd={() => setDraggedItem(null)}
+                  style={{
+                    opacity:
+                      draggedItem === role ? 0.5 : 1,
+                  }}
+                >
+                  <span
+                    className="bracket"
+                    aria-hidden="true"
+                  >
+                    [
+                  </span>
+
+                  {role}
+
+                  <span
+                    className="bracket"
+                    aria-hidden="true"
+                  >
+                    ]
+                  </span>
+                </span>
+              );
+            })}
+          </div>
+        )}
 
       </section>
 

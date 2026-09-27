@@ -717,11 +717,8 @@ a {
 
 /* ===== SCROLL TITLE ===== */
 #scroll-title {
-  position: absolute;
-  width: 100%;
-  top: calc(28vh + 4.5rem);
-  left: 0;
-  transform: none;
+  width: auto;
+  max-width: 100%;
   color: var(--color-black);
   font-weight: 800;
   font-family: var(--font-secondary);
@@ -733,8 +730,15 @@ a {
   padding: 0.5em 1rem;
   word-break: break-word;
   opacity: 0;
-  transition: transform var(--duration-medium) var(--ease-aggressive), opacity var(--duration-medium);
+  transform: translateY(100px);
+  transition: transform 0.7s cubic-bezier(.2, 1.2, .6, 1), opacity 0.5s;
   will-change: transform, opacity;
+  margin-top: -5.7rem;
+}
+
+#scroll-title.hero-title-visible {
+  transform: translateY(0);
+  opacity: 1;
 }
 
 /* ===== BOTTOM GIF ===== */
@@ -742,7 +746,7 @@ a {
   user-select: none;
   position: fixed;
   bottom: 0;
-  left: 0%;
+  left: 50%;
   transform: translateX(-50%) translateY(100px);
   display: flex;
   justify-content: center;
@@ -753,6 +757,7 @@ a {
   will-change: transform, opacity;
   width: 100vw;
   overflow: hidden;
+  transition: transform 1.2s cubic-bezier(.4, 1.25, .6, 1), opacity 0.5s;
   height: auto;
 }
 
@@ -765,6 +770,11 @@ a {
   height: clamp(250px, 40vh, 550px);
   display: block;
   margin: 0 auto;
+}
+
+.bottom-gif.hero-gif-visible {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
 }
 
 /*  #endregion */
@@ -801,12 +811,15 @@ a {
   height: clamp(16px, 4vw, 24px);
 }
 
+.scroll-space {
+  margin-left: 0.5ch;
+}
 /*  #endregion */
 
 /* #region ===== DRAG AND DROP NAVIGATION ===== */
 .categorySelect {
-  position: static;
-
+  position: fixed;
+  z-index: var(--z-interactive);
   width: min(100%, 850px);
   max-width: 100%;
 
@@ -1976,7 +1989,7 @@ form textarea {
 }
 
 @media (max-width: 460px) {
-  .job-role-container {
+  .hero-intro-container {
     top: 39vh;
     width: 100%;
     max-width: 100vw;
